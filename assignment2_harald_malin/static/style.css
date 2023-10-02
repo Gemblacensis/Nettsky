@@ -1,0 +1,98 @@
+/* CSS styles for the navigation bar */
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    top: 0;
+    position: fixed;
+    width: 100%;
+}
+.navbar a {
+    float: left;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
+    
+/* CSS styles for the main content and input bar */
+.content {
+    text-align: center;
+    padding-bottom: 60px; /* Height of the input bar */
+    width: 60%;
+    margin: 0 auto;
+}
+.input-bar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background-color: #f2f2f2;
+    padding: 10px;
+}
+.input-bar input[type="text"] {
+    width: 70%;
+    padding: 8px;
+}
+.input-bar input[type="submit"] {
+    width: 20%;
+    padding: 8px;
+}
+
+body {
+    padding-top: 40px;
+}
+
+/* CSS styles for highlighting text */
+.highlight1 {
+    background-color: yellow;
+}
+
+.highlight2 {
+    background-color: lightblue;
+}
+
+.highlight3 {
+    background-color: red;
+}
+
+/* CSS styles for item to highlight */
+.itemToHighlight {
+    background-color: #d9d9d9;
+    border: 1px solid black;
+    border-collapse: collapse;
+    padding: 20px;
+}
+
+/* CSS styles for delete highlight */
+.deleteButton {
+    display: flex;
+    justify-content: center; /* Horizontal alignment: center, start, end, space-between, space-around, etc. */
+    align-items: center; /* Vertical alignment: center, start, end, stretch, baseline, etc. */
+  }
+
+/* Consent styling */
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+  }

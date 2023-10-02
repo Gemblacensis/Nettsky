@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Submit the form using AJAX when the user clicks the Submit button
+        $('form').submit(function (event) {
+            event.preventDefault();  // Prevent the default form submission
+            var userInput = $('#input_data').val();  // Get the user input
+            document.getElementById('input_data').value = '' //Clear the user input
+            updateChat(userInput);  // Call the function to update the chat
+        });
+
+        function updateChat(userInput) {
+            $.ajax({
+                type: 'POST',
+                url: '/index',
+                data: { input_data: userInput },  // Pass the user input to the server
+                success: function (response) {
+                    // Update the chat messages on the page
+                    var dataMessages = response.data;
+                    $('#data').html(dataMessages);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Inputs</h1>
+    <p>First entry: {{data}}</p>
+    <p>Latest entry:</p>
+    <p id="data"></p>
+</div>
+<div class="input-bar">
+    <form>
+        <input type="text" id="input_data" name="input_data">
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: web
+  name: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: web
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: /snap/kompose/19/kompose-linux-amd64 convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: web
+    spec:
+      containers:
+      - env:
+        - name: DATABASE_URL
+          value: postgres://group02:pw1234@postgres:5433/group02_db
+        image: localhost:5000/web:latest
+        imagePullPolicy: ""
+        name: web
+        ports:
+        - containerPort: 80
+        # readinessProbe:
+        #   httpGet:
+        #     path: /index
+        #     port: 80
+        #   initialDelaySeconds: 100
+        #   periodSeconds: 10
+
+        startupProbe:
+          httpGet:
+            path: /index
+            port: 80
+          initialDelaySeconds: 20 
+          periodSeconds: 5        
+
+        livenessProbe:
+          httpGet:
+            path: /index
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        resources: {}
+      #restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

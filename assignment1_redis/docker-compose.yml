@@ -1,0 +1,44 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: group02
+      POSTGRES_PASSWORD: pw1234
+      POSTGRES_DB: group02_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  web:
+    build:
+      network: host
+      context: ./
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+      - cache
+    environment:
+      DATABASE_URL: postgres://group02:pw1234@postgres:5433/group02_db
+
+  cache:
+      container_name: redis
+      image: redis:6.2-alpine
+      restart: always
+      expose:
+        - 6379
+      ports:
+        - '6379:6379'
+      environment:
+        - REDIS_PASSWORD=pw1234
+      volumes:
+        - cache:/data
+
+volumes:
+  postgres_data:
+  cache:
+    driver: local
