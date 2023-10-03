@@ -1,2 +1,2 @@
 # Nettsky
-DAT 515, gruppe 02
+DAT 515, group 02
