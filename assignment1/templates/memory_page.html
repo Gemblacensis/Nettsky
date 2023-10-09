@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Memories of the fallen</h1>
+
+            {% for person in data %}
+            <div style="border: 1px solid black; padding-left: 10px;">
+                <h2>{{ person[1] }} {{ person[2] }}</h2>
+                <p>{{ person[3] }}</p>
+            </div>
+            {% endfor %}
+{% endblock %}

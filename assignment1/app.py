@@ -1,61 +1,84 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, url_for
 import psycopg2
 import redis
+import subprocess
+
+subprocess.run(['pip', 'install', '-r', '/requirements.txt'])
 
 app = Flask(__name__)
 redis_client = redis.Redis(
-    host='192.168.2.158'
+    host='cache',
+    port=6379,
+    decode_responses=True
 )
 
 @app.route('/')
 def redirecting():
+    redis_client.set('pagevisitcounter', 0)
     return redirect('/index')
 
 
-@app.route('/index', methods=['GET','POST'])
-def hello_world():
+@app.route('/add')
+def add():
+    return render_template('add.html')
+
+
+@app.route('/index')
+def memory_page():
+
     conn = psycopg2.connect(
-        host='postgres',
-        database='group02_db',
-        user='group02',
-        password='pw1234'
-    )
+            host='postgres',
+            database='group02_db',
+            user='group02',
+            password='pw1234'
+        )
+
+    c = conn.cursor()
+
+    select_query = 'SELECT * FROM person'
+    c.execute(select_query)
+
+    data = c.fetchall()
+    c.close()
+
+    redis_client.incr('pagevisitcounter')
+
+    return render_template('memory_page.html', data=data)
+
+
+@app.route('/submit', methods=['POST'])
+def submit():
     if request.method == 'POST':
         conn = psycopg2.connect(
-        host='postgres',
-        database='group02_db',
-        user='group02',
-        password='pw1234'
+            host='postgres',
+            database='group02_db',
+            user='group02',
+            password='pw1234'
         )
-        data = request.form["input_data"]
-        c = conn.cursor()
-        c.execute(f"INSERT INTO table2 (data) VALUES ('{data}');")
-        conn.commit()
-        c.execute(f'SELECT data FROM table2 ORDER BY data LIMIT 1;')
-        data2 = c.fetchone()[0]
-        c.close()
-        conn.close()
-        return jsonify({"data": data2})
-    create_db()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO table1 (name) VALUES ('harald');")
-    conn.commit()
-    #select_query = f'SELECT data FROM table2 ORDER BY data DESC LIMIT 1;'   
-    #select_query = f'SELECT data FROM table2 WHERE id = 1;'
-    select_query = f'SELECT name FROM table1 WHERE id = 1;'
-    cursor.execute(select_query)
-    person_name = cursor.fetchone()[0]  
-    cursor.close()
-    conn.close()
-    return render_template('index.html', data=person_name)
+        first_name = request.form['first_name']
+        surname = request.form['surname']
+        description = request.form['description']
 
-@app.route('/aa')
-def pageVisit():
-    redis_client.set('pagevisit', 0)
-    pagevisit_value = redis_client.incr('pagevisit')
-    # redis_client.incr('pagevisit')
-    counter = str(redis_client.get('pagevisit'),'utf-8')
-    return "This page has been visited "+counter+" time(s)"
+        # Insert data into the database
+        c = conn.cursor()
+        # if len(first_name) > 50:
+        #     first_name = first_name[0:49]
+        # if len(surname) > 70:
+        #     surname = surname[0:69]
+        # if len(description) > 300:
+        #     description = description[0:299]
+        c.execute("INSERT INTO person (first_name, surname, description) VALUES (%s,%s,%s)", (first_name,surname,description))
+        conn.commit()
+        c.close()
+
+        return redirect('/index')
+
+
+@app.route('/pagevisitcount')
+def pagevisitcounter():
+    #pagevisit_value = redis_client.incr('pagevisit')
+    counter = redis_client.get('pagevisitcounter')
+    return render_template('redis.html', counter=counter)
 
 
 def create_db():
@@ -66,17 +89,11 @@ def create_db():
         password='pw1234'
     )
     c = conn.cursor()
-    c.execute('DROP TABLE IF EXISTS table2;')
+    c.execute('CREATE TABLE IF NOT EXISTS person (id serial PRIMARY KEY, first_name VARCHAR(50), surname VARCHAR(70), description VARCHAR(300));')
     conn.commit()
-    c.execute('CREATE TABLE table2 (id serial PRIMARY KEY, data VARCHAR(50));')
-    conn.commit()
-
-    c.execute('DROP TABLE IF EXISTS table1;')
-    conn.commit()
-    c.execute('CREATE TABLE table1 (id serial PRIMARY KEY, name VARCHAR(50));')
-    conn.commit()
-
     c.close()
     conn.close()
+
 if __name__ == '__main__':
+    create_db()
     app.run(host='0.0.0.0', port=80)
