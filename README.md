@@ -8,7 +8,7 @@ Go into Assignment 2 folder
 docker-compose up --build -d
 
 # Kubernetes:
-docker build -t web:latest --network=host .
+docker build -t web:latest --network=host . --network=host
 
 docker image tag web:latest localhost:5000/web:latest
 
