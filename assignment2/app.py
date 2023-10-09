@@ -61,12 +61,7 @@ def submit():
 
         # Insert data into the database
         c = conn.cursor()
-        # if len(first_name) > 50:
-        #     first_name = first_name[0:49]
-        # if len(surname) > 70:
-        #     surname = surname[0:69]
-        # if len(description) > 300:
-        #     description = description[0:299]
+        
         c.execute("INSERT INTO person (first_name, surname, description) VALUES (%s,%s,%s)", (first_name,surname,description))
         conn.commit()
         c.close()
