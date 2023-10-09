@@ -9,12 +9,10 @@ metadata:
     io.kompose.service: cache
   name: cache
 spec:
-  type: NodePort
   ports:
   - name: "6379"
     port: 6379
     targetPort: 6379
-    nodePort: 30036
   selector:
     io.kompose.service: cache
 status:
